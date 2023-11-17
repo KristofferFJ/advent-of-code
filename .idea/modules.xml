@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/advent-of-code.iml" filepath="$PROJECT_DIR$/advent-of-code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aoc-2023-go.iml" filepath="$PROJECT_DIR$/aoc-2023-go.iml" />
     </modules>
   </component>
 </project>
