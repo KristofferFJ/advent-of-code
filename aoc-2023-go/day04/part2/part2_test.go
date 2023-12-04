@@ -2,6 +2,7 @@ package part1
 
 import (
 	"fmt"
+	"io.kristofferfj.github/aoc-2023-go/internal"
 	"reflect"
 	"regexp"
 	"slices"
@@ -52,7 +53,7 @@ func evaluateCard(card Card) int {
 }
 
 func toCard(string string) Card {
-	cleaned := Remove(string, regexp.MustCompile(`Card\s+\d+: `))
+	cleaned := internal.Remove(string, regexp.MustCompile(`Card\s+\d+: `))
 	split := strings.Split(cleaned, " | ")
 	var winningNumbers []int
 	for _, numberString := range regexp.MustCompile("\\s+").Split(strings.Trim(split[0], " "), 1000) {
@@ -68,10 +69,6 @@ func toCard(string string) Card {
 		WinningNumbers: winningNumbers,
 		Numbers:        numbers,
 	}
-}
-
-func Remove(string string, regexp *regexp.Regexp) string {
-	return regexp.ReplaceAllString(string, "")
 }
 
 func TestParseRounds(t *testing.T) {

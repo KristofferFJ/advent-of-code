@@ -2,6 +2,7 @@ package part1
 
 import (
 	"fmt"
+	"io.kristofferfj.github/aoc-2023-go/internal"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -72,7 +73,7 @@ func maxGreen(round Rounds) int {
 }
 
 func toRounds(string string) Rounds {
-	cleaned := Remove(string, regexp.MustCompile(`Game \d+: `))
+	cleaned := internal.Remove(string, regexp.MustCompile(`Game \d+: `))
 	roundsStrings := strings.Split(cleaned, "; ")
 
 	rounds := Rounds{Balls: []Balls{}}
@@ -101,10 +102,6 @@ func toBalls(roundString string) Balls {
 	}
 
 	return balls
-}
-
-func Remove(string string, regexp *regexp.Regexp) string {
-	return regexp.ReplaceAllString(string, "")
 }
 
 func TestParseRounds(t *testing.T) {

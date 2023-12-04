@@ -2,14 +2,14 @@ package part1
 
 import (
 	"fmt"
+	"io.kristofferfj.github/aoc-2023-go/internal"
 	"strconv"
-	"strings"
 	"testing"
 )
 
 func TestTestInput(t *testing.T) {
 	sum := 0
-	grid := toGrid(InputTest)
+	grid := internal.ToGrid(InputTest)
 
 	for rowIndex := 0; rowIndex < len(grid); rowIndex++ {
 		sum += evaluateLine(rowIndex, grid)
@@ -22,7 +22,7 @@ func TestTestInput(t *testing.T) {
 
 func TestInput(t *testing.T) {
 	sum := 0
-	grid := toGrid(Input)
+	grid := internal.ToGrid(Input)
 
 	for rowIndex := 0; rowIndex < len(grid); rowIndex++ {
 		sum += evaluateLine(rowIndex, grid)
@@ -57,7 +57,7 @@ func numberOfAdjacentNumbers(
 	for i := row - 1; i <= row+1; i++ {
 		number = false
 		for j := column - 1; j <= column+1; j++ {
-			if inGrid(i, j, grid) && IsNumber(grid[i][j]) {
+			if internal.InGrid(i, j, grid) && internal.IsNumber(grid[i][j]) {
 				if !number {
 					sum += 1
 					number = true
@@ -84,7 +84,7 @@ func calculateGearRatio(
 	for i := row - 1; i <= row+1; i++ {
 		number = false
 		for j := column - 1; j <= column+1; j++ {
-			if inGrid(i, j, grid) && IsNumber(grid[i][j]) {
+			if internal.InGrid(i, j, grid) && internal.IsNumber(grid[i][j]) {
 				if !number {
 					product *= getNumber(i, j, grid)
 					number = true
@@ -104,14 +104,14 @@ func calculateGearRatio(
 func getNumber(row int, column int, grid [][]string) int {
 	num := grid[row][column]
 	for i := column - 1; i >= 0; i-- {
-		if IsNumber(grid[row][i]) {
+		if internal.IsNumber(grid[row][i]) {
 			num = grid[row][i] + num
 		} else {
 			break
 		}
 	}
 	for i := column + 1; i < len(grid[0]); i++ {
-		if IsNumber(grid[row][i]) {
+		if internal.IsNumber(grid[row][i]) {
 			num = num + grid[row][i]
 		} else {
 			break
@@ -120,25 +120,4 @@ func getNumber(row int, column int, grid [][]string) int {
 	convertedNum, _ := strconv.Atoi(num)
 	fmt.Printf("row=%d, column=%d, found=%d\n", row, column, convertedNum)
 	return convertedNum
-}
-
-func inGrid(row int, column int, grid [][]string) bool {
-	return row >= 0 && row < len(grid[0]) && column >= 0 && column < len(grid)
-}
-
-func IsNumber(s string) bool {
-	if _, err := strconv.Atoi(s); err != nil {
-		return false
-	}
-	return true
-}
-
-func toGrid(s string) [][]string {
-	lines := strings.Split(s, "\n")
-	var grid [][]string
-	for _, line := range lines {
-		grid = append(grid, strings.Split(line, ""))
-	}
-
-	return grid
 }
