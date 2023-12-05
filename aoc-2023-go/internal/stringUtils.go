@@ -15,3 +15,13 @@ func IsNumber(s string) bool {
 func Remove(string string, regexp *regexp.Regexp) string {
 	return regexp.ReplaceAllString(string, "")
 }
+
+func FindNumbersInString(string string) []int {
+	stringNumbers := regexp.MustCompile("\\d+").FindAllString(string, -1)
+	var numbers []int
+	for _, stringNumber := range stringNumbers {
+		convertedNumber, _ := strconv.Atoi(stringNumber)
+		numbers = append(numbers, convertedNumber)
+	}
+	return numbers
+}
