@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 	"testing"
 )
@@ -55,16 +54,8 @@ func evaluateCard(card Card) int {
 func toCard(string string) Card {
 	cleaned := internal.Remove(string, regexp.MustCompile(`Card\s+\d+: `))
 	split := strings.Split(cleaned, " | ")
-	var winningNumbers []int
-	for _, numberString := range regexp.MustCompile("\\s+").Split(strings.Trim(split[0], " "), 1000) {
-		converted, _ := strconv.Atoi(numberString)
-		winningNumbers = append(winningNumbers, converted)
-	}
-	var numbers []int
-	for _, numberString := range regexp.MustCompile("\\s+").Split(strings.Trim(split[1], " "), 1000) {
-		converted, _ := strconv.Atoi(numberString)
-		numbers = append(numbers, converted)
-	}
+	winningNumbers := internal.IntArray(split[0])
+	numbers := internal.IntArray(split[1])
 	return Card{
 		WinningNumbers: winningNumbers,
 		Numbers:        numbers,

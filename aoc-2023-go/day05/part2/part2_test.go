@@ -46,7 +46,7 @@ type destinationSourceMap struct {
 }
 
 func seedIntervals(input string) []interval {
-	numbers := internal.FindNumbersInString(strings.Split(input, "\n\n")[0])
+	numbers := internal.IntArray(strings.Split(input, "\n\n")[0])
 	var intervals []interval
 	for startIndex := 0; startIndex < len(numbers); startIndex += 2 {
 		intervals = append(intervals, interval{
@@ -75,7 +75,7 @@ func toDestinationSourceMaps(partition string) []destinationSourceMap {
 	split := strings.Split(partition, "\n")
 	var destinationSourceMaps []destinationSourceMap
 	for i := 1; i < len(split); i++ {
-		numbers := internal.FindNumbersInString(split[i])
+		numbers := internal.IntArray(split[i])
 		destinationSourceMaps = append(destinationSourceMaps, destinationSourceMap{
 			destination: numbers[0],
 			source:      numbers[1],

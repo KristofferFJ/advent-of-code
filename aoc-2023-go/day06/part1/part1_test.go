@@ -2,15 +2,15 @@ package part1
 
 import (
 	"fmt"
-	"io.kristofferfj.github/aoc-2023-go/internal"
+	. "io.kristofferfj.github/aoc-2023-go/internal"
 	"strings"
 	"testing"
 )
 
 func TestTestInput(t *testing.T) {
 	product := 1
-	raceTimes := internal.FindNumbersInString(strings.Split(InputTest, "\n")[0])
-	distancesToBeat := internal.FindNumbersInString(strings.Split(InputTest, "\n")[1])
+	raceTimes := IntArray(strings.Split(InputTest, "\n")[0])
+	distancesToBeat := IntArray(strings.Split(InputTest, "\n")[1])
 
 	for index, raceTime := range raceTimes {
 		sum := 0
@@ -29,8 +29,8 @@ func TestTestInput(t *testing.T) {
 
 func TestInput(t *testing.T) {
 	product := 1
-	raceTimes := internal.FindNumbersInString(strings.Split(Input, "\n")[0])
-	distancesToBeat := internal.FindNumbersInString(strings.Split(Input, "\n")[1])
+	raceTimes := IntArray(strings.Split(Input, "\n")[0])
+	distancesToBeat := IntArray(strings.Split(Input, "\n")[1])
 
 	for index, raceTime := range raceTimes {
 		sum := 0
