@@ -1,6 +1,8 @@
 package internal
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func Max(one int, two int) int {
 	if one > two {

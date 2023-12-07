@@ -2,21 +2,25 @@ package part1
 
 import (
 	"fmt"
-	"io.kristofferfj.github/aoc-2023-go/internal"
+	. "io.kristofferfj.github/aoc-2023-go/internal"
 	"strings"
 	"testing"
 )
 
 func TestTestInput(t *testing.T) {
 	seedIntervals := seedIntervals(InputTest)
-	fmt.Println(seedIntervals)
+	destinationSourceMaps := parseInput(InputTest)
+
+	finalIntervals := getLocationFromSeed(seedIntervals, destinationSourceMaps)
+
+	fmt.Println(finalIntervals)
 }
 
 func TestInput(t *testing.T) {
 
 }
 
-func getLocationFromSeed(seedRanges []interval, maps destinationSourceMaps) int {
+func getLocationFromSeed(seedRanges []Interval, maps destinationSourceMaps) []Interval {
 	soil := getCorresponding(seedRanges, maps.seedToSoil)
 	fertilizer := getCorresponding(soil, maps.soilToFertilizer)
 	water := getCorresponding(fertilizer, maps.fertilizerToWater)
@@ -26,8 +30,24 @@ func getLocationFromSeed(seedRanges []interval, maps destinationSourceMaps) int 
 	return getCorresponding(humidity, maps.humidityToLocation)
 }
 
-func getCorresponding(intervals []interval, destinationSourceMap destinationSourceMap) []interval {
+func getCorresponding(intervals []Interval, destinationSourceMap []destinationSourceMap) []Interval {
+	var modifiedIntervals []Interval
+	var intersections []Interval
+	for _, interval := range intervals {
+		for _, sourceInterval := range destinationSourceMap {
+			intersection, intersects := interval.Intersection(sourceInterval.sourceInterval)
+			if intersects {
+				intersections = append(intersections, intersection)
+				modifiedIntervals = append(modifiedIntervals, Interval{
+					StartInclusive: intersection.StartInclusive + sourceInterval.modifier,
+					EndInclusive:   intersection.EndInclusive + sourceInterval.modifier,
+				})
+			}
+		}
+	}
+	modifiedIntervals = append(modifiedIntervals, RemoveSlices(intervals, intersections)...)
 
+	return modifiedIntervals
 }
 
 type destinationSourceMaps struct {
@@ -41,17 +61,17 @@ type destinationSourceMaps struct {
 }
 
 type destinationSourceMap struct {
-	sourceInterval []interval
+	sourceInterval Interval
 	modifier       int
 }
 
-func seedIntervals(input string) []interval {
-	numbers := internal.IntArray(strings.Split(input, "\n\n")[0])
-	var intervals []interval
+func seedIntervals(input string) []Interval {
+	numbers := IntArray(strings.Split(input, "\n\n")[0])
+	var intervals []Interval
 	for startIndex := 0; startIndex < len(numbers); startIndex += 2 {
-		intervals = append(intervals, interval{
-			startInclusive: numbers[startIndex],
-			endInclusive:   numbers[startIndex] + numbers[startIndex+1] - 1,
+		intervals = append(intervals, Interval{
+			StartInclusive: numbers[startIndex],
+			EndInclusive:   numbers[startIndex] + numbers[startIndex+1] - 1,
 		})
 	}
 
@@ -75,11 +95,13 @@ func toDestinationSourceMaps(partition string) []destinationSourceMap {
 	split := strings.Split(partition, "\n")
 	var destinationSourceMaps []destinationSourceMap
 	for i := 1; i < len(split); i++ {
-		numbers := internal.IntArray(split[i])
+		numbers := IntArray(split[i])
 		destinationSourceMaps = append(destinationSourceMaps, destinationSourceMap{
-			destination: numbers[0],
-			source:      numbers[1],
-			length:      numbers[2],
+			sourceInterval: Interval{
+				StartInclusive: numbers[1],
+				EndInclusive:   numbers[1] + numbers[2] - 1,
+			},
+			modifier: numbers[0] - numbers[1],
 		})
 	}
 	return destinationSourceMaps
