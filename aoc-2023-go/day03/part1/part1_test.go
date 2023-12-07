@@ -2,14 +2,14 @@ package part1
 
 import (
 	"fmt"
-	"io.kristofferfj.github/aoc-2023-go/internal"
+	"io.kristofferfj.github/aoc-2023-go/util"
 	"strconv"
 	"testing"
 )
 
 func TestTestInput(t *testing.T) {
 	sum := 0
-	grid := internal.ToGrid(InputTest)
+	grid := util.ToGrid(InputTest)
 
 	for rowIndex := 0; rowIndex < len(grid); rowIndex++ {
 		sum += evaluateLine(rowIndex, grid)
@@ -22,7 +22,7 @@ func TestTestInput(t *testing.T) {
 
 func TestInput(t *testing.T) {
 	sum := 0
-	grid := internal.ToGrid(Input)
+	grid := util.ToGrid(Input)
 
 	for rowIndex := 0; rowIndex < len(grid); rowIndex++ {
 		sum += evaluateLine(rowIndex, grid)
@@ -38,7 +38,7 @@ func evaluateLine(rowIndex int, grid [][]string) int {
 	sum := 0
 
 	for index, symbol := range grid[rowIndex] {
-		if internal.IsNumber(symbol) {
+		if util.IsNumber(symbol) {
 			currentNumberString += symbol
 			endIndex = index
 			if startIndex == -1 {
@@ -77,7 +77,7 @@ func hasAdjacentSymbol(
 		for column := columnStartIndex - 1; column <= columnEndIndex+1; column++ {
 			if row >= 0 && row < len(grid[0]) && column >= 0 && column < len(grid) {
 				value := grid[row][column]
-				if !internal.IsNumber(value) && value != "." {
+				if !util.IsNumber(value) && value != "." {
 					return true
 				}
 			}

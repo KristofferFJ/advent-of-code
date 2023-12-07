@@ -2,7 +2,7 @@ package part1
 
 import (
 	"fmt"
-	. "io.kristofferfj.github/aoc-2023-go/internal"
+	. "io.kristofferfj.github/aoc-2023-go/util"
 	"strings"
 	"testing"
 )

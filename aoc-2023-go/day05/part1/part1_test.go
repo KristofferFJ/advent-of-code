@@ -2,7 +2,7 @@ package part1
 
 import (
 	"fmt"
-	"io.kristofferfj.github/aoc-2023-go/internal"
+	"io.kristofferfj.github/aoc-2023-go/util"
 	"strings"
 	"testing"
 )
@@ -64,7 +64,7 @@ type destinationSourceMap struct {
 }
 
 func seedNumbers(input string) []int {
-	return internal.IntArray(strings.Split(input, "\n\n")[0])
+	return util.IntArray(strings.Split(input, "\n\n")[0])
 }
 
 func parseInput(input string) destinationSourceMaps {
@@ -84,7 +84,7 @@ func toDestinationSourceMaps(partition string) []destinationSourceMap {
 	split := strings.Split(partition, "\n")
 	var destinationSourceMaps []destinationSourceMap
 	for i := 1; i < len(split); i++ {
-		numbers := internal.IntArray(split[i])
+		numbers := util.IntArray(split[i])
 		destinationSourceMaps = append(destinationSourceMaps, destinationSourceMap{
 			destination: numbers[0],
 			source:      numbers[1],

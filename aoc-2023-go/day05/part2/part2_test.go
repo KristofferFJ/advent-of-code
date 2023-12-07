@@ -2,7 +2,7 @@ package part1
 
 import (
 	"fmt"
-	. "io.kristofferfj.github/aoc-2023-go/internal"
+	. "io.kristofferfj.github/aoc-2023-go/util"
 	"strings"
 	"testing"
 )
@@ -13,11 +13,18 @@ func TestTestInput(t *testing.T) {
 
 	finalIntervals := getLocationFromSeed(seedIntervals, destinationSourceMaps)
 
-	fmt.Println(finalIntervals)
+	if finalIntervals[0].StartInclusive != 46 {
+		t.Error()
+	}
 }
 
 func TestInput(t *testing.T) {
+	seedIntervals := seedIntervals(Input)
+	destinationSourceMaps := parseInput(Input)
 
+	finalIntervals := getLocationFromSeed(seedIntervals, destinationSourceMaps)
+
+	fmt.Println(finalIntervals[0].StartInclusive)
 }
 
 func getLocationFromSeed(seedRanges []Interval, maps destinationSourceMaps) []Interval {
@@ -46,7 +53,7 @@ func getCorresponding(intervals []Interval, destinationSourceMap []destinationSo
 		}
 	}
 	modifiedIntervals = append(modifiedIntervals, RemoveSlices(intervals, intersections)...)
-
+	modifiedIntervals = MergeIntervals(modifiedIntervals)
 	return modifiedIntervals
 }
 
