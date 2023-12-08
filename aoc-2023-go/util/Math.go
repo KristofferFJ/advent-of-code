@@ -27,21 +27,21 @@ func AppendNumbers(numbers []int) int {
 	return result
 }
 
-func GCD(a, b uint64) uint64 {
+func GCD(a, b int) int {
 	if b == 0 {
 		return a
 	}
 	return GCD(b, a%b)
 }
 
-func LCM(a, b uint64) uint64 {
+func LCM(a, b int) int {
 	return (a / GCD(a, b)) * b
 }
 
-func LCMArray(numbers []int) uint64 {
-	lcm := uint64(1)
+func LCMArray(numbers []int) int {
+	lcm := 1
 	for _, number := range numbers {
-		lcm = LCM(uint64(number), lcm)
+		lcm = LCM(number, lcm)
 	}
 	return lcm
 }
