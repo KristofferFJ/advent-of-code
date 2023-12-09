@@ -17,7 +17,7 @@ func Remove(string string, regexp *regexp.Regexp) string {
 }
 
 func IntArray(string string) []int {
-	stringNumbers := regexp.MustCompile("\\d+").FindAllString(string, -1)
+	stringNumbers := regexp.MustCompile("-?\\d+").FindAllString(string, -1)
 	var numbers []int
 	for _, stringNumber := range stringNumbers {
 		convertedNumber, _ := strconv.Atoi(stringNumber)
