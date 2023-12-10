@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func TestTestInput(t *testing.T) {
+func TestInput(t *testing.T) {
 }
 
-func TestInput(t *testing.T) {
+func TestTestInput(t *testing.T) {
 }
