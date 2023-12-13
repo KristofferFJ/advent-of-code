@@ -1,5 +1,7 @@
 package util
 
+import "reflect"
+
 func Filter[T any](list []T, test func(T) bool) (filteredList []T) {
 	for _, element := range list {
 		if test(element) {
@@ -51,4 +53,74 @@ func RotateLeft[T any](array [][]T) [][]T {
 		result = append(result, newRow)
 	}
 	return result
+}
+
+func IntArrayEqual(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, elem := range a {
+		if elem != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func StringArrayEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, elem := range a {
+		if elem != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func StringArrayDifferences(a, b []string) int {
+	if len(a) != len(b) {
+		panic("Arrays must be of equal length")
+	}
+	sum := 0
+	for i, elem := range a {
+		if elem != b[i] {
+			sum++
+		}
+	}
+	return sum
+}
+
+func SumIntArray(a []int) int {
+	sum := 0
+	for _, elem := range a {
+		sum += elem
+	}
+	return sum
+}
+
+func Duplicate[T any](list []T) []T {
+	newList := make([]T, len(list))
+	copy(newList, list)
+	return newList
+}
+
+func RemoveDuplicates(slice [][]string) [][]string {
+	unique := make([][]string, 0)
+	for _, elem := range slice {
+		if !contains(unique, elem) {
+			unique = append(unique, elem)
+		}
+	}
+	return unique
+}
+
+func contains(slice [][]string, item []string) bool {
+	for _, v := range slice {
+		if reflect.DeepEqual(v, item) {
+			return true
+		}
+	}
+	return false
 }
