@@ -11,6 +11,16 @@ func Max(one int, two int) int {
 	return two
 }
 
+func MaxArray(arr []int) int {
+	m := arr[0]
+	for _, num := range arr {
+		if num > m {
+			m = num
+		}
+	}
+	return m
+}
+
 func Min(one int, two int) int {
 	if one < two {
 		return one
