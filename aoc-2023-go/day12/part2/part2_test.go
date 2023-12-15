@@ -16,7 +16,7 @@ type Setup struct {
 func TestInput(t *testing.T) {
 	var setups []Setup
 	sum := 0
-	for _, line := range strings.Split(InputTest, "\n") {
+	for _, line := range strings.Split(Input, "\n") {
 		springs := strings.Split(line, " ")[0]
 		alteredSprings := springs
 		for i := 0; i < 4; i++ {
@@ -36,8 +36,8 @@ func TestInput(t *testing.T) {
 			})
 	}
 
-	for _, springs := range setups {
-		sum += countValidSetups(springs)
+	for i := 0; i < len(setups); i++ {
+		sum += countValidSetups(setups[i])
 	}
 
 	fmt.Println(sum)
@@ -48,10 +48,10 @@ func countValidSetups(setup Setup) int {
 	springsToPlace := util.SumIntArray(setup.configuration) - springCount
 	dotsToPlace := questionMarkCount - springsToPlace
 
-	return len(getValidPositions(springsToPlace, dotsToPlace, setup.springs, setup.config))
+	return len(getValidPositions(springsToPlace, dotsToPlace, setup.springs, setup.config, setup.configuration))
 }
 
-func getValidPositions(springsToPlace, dotsToPlace int, springs, config string) []string {
+func getValidPositions(springsToPlace, dotsToPlace int, springs, config string, configuration []int) []string {
 	if springsToPlace == 0 && dotsToPlace == 0 {
 		if valid(springs, config) {
 			return []string{springs}
@@ -59,18 +59,44 @@ func getValidPositions(springsToPlace, dotsToPlace int, springs, config string) 
 		return []string{}
 	}
 
-	if largestSegment(springs) > util.MaxArray(util.IntArray(config)) {
+	if !possiblyValid(springs, configuration) {
 		return []string{}
 	}
 
 	if springsToPlace > 0 && dotsToPlace > 0 {
-		return append(getValidPositions(springsToPlace-1, dotsToPlace, strings.Replace(springs, "?", "#", 1), config),
-			getValidPositions(springsToPlace, dotsToPlace-1, strings.Replace(springs, "?", ".", 1), config)...)
+		return append(getValidPositions(springsToPlace-1, dotsToPlace, strings.Replace(springs, "?", "#", 1), config, configuration),
+			getValidPositions(springsToPlace, dotsToPlace-1, strings.Replace(springs, "?", ".", 1), config, configuration)...)
 	}
 	if springsToPlace > 0 {
-		return getValidPositions(springsToPlace-1, dotsToPlace, strings.Replace(springs, "?", "#", 1), config)
+		return getValidPositions(springsToPlace-1, dotsToPlace, strings.Replace(springs, "?", "#", 1), config, configuration)
 	}
-	return getValidPositions(springsToPlace, dotsToPlace-1, strings.Replace(springs, "?", ".", 1), config)
+	return getValidPositions(springsToPlace, dotsToPlace-1, strings.Replace(springs, "?", ".", 1), config, configuration)
+}
+
+func possiblyValid(springs string, configuration []int) bool {
+	finishedUpUntil := strings.Index(springs, "?")
+	if finishedUpUntil > 0 {
+		var finishedGroups []int
+		for _, segment := range strings.Split(springs[:(finishedUpUntil)], ".") {
+			if segment != "" {
+				finishedGroups = append(finishedGroups, len(segment))
+			}
+		}
+
+		for i := 0; i < len(finishedGroups)-1; i++ {
+			if finishedGroups[i] != configuration[i] {
+				return false
+			}
+		}
+		if len(finishedGroups) > 0 && finishedGroups[len(finishedGroups)-1] > configuration[len(finishedGroups)-1] {
+			return false
+		}
+		if len(finishedGroups) > 0 && springs[finishedUpUntil-1:finishedUpUntil] == "." && finishedGroups[len(finishedGroups)-1] != configuration[len(finishedGroups)-1] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func valid(springs string, config string) bool {
@@ -85,16 +111,4 @@ func valid(springs string, config string) bool {
 	}
 
 	return strings.Join(counts, ",") == config
-}
-
-func largestSegment(springs string) int {
-	segments := strings.Split(springs, ".")
-	largest := 0
-	for _, segment := range segments {
-		if len(segment) > largest {
-			largest = len(segment)
-		}
-	}
-	return largest
-
 }
