@@ -1,8 +1,11 @@
 package util
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
-func InGrid(row int, column int, grid [][]string) bool {
+func InGrid[T any](row int, column int, grid [][]T) bool {
 	return row >= 0 && row < len(grid) && column >= 0 && column < len(grid[0])
 }
 
@@ -11,6 +14,21 @@ func ToGrid(s string) [][]string {
 	var grid [][]string
 	for _, line := range lines {
 		grid = append(grid, strings.Split(line, ""))
+	}
+
+	return grid
+}
+
+func ToIntGrid(s string) [][]int {
+	lines := strings.Split(s, "\n")
+	var grid [][]int
+	for _, line := range lines {
+		var row []int
+		for _, char := range strings.Split(line, "") {
+			num, _ := strconv.Atoi(char)
+			row = append(row, num)
+		}
+		grid = append(grid, row)
 	}
 
 	return grid

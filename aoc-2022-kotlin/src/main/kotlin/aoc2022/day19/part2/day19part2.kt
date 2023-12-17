@@ -1,5 +1,6 @@
 package aoc2022.day19.part2
 
+import kotlin.math.sign
 import utils.CollectionUtils.Companion.prod
 
 data class Blueprint(
@@ -76,7 +77,7 @@ data class Strategy(
 
 fun main() {
     val blueprints = INPUT.split("\n").map { Regex("\\d+").findAll(it).map { it.value.toInt() }.toList() }
-        .map {
+        .filter { it.isNotEmpty() }.map {
             Blueprint(
                 it[1], it[2], Pair(it[3], it[4]), Pair(it[5], it[6])
             )
