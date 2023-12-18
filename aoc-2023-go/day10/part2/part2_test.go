@@ -21,8 +21,8 @@ func TestInput(t *testing.T) {
 	sum := 0
 	for row := 0; row < len(grid); row++ {
 		for column := 0; column < len(grid[0]); column++ {
-			if FigureContains(vertices, Point{Row: row, Column: column}) {
-				if !PointInList(Point{Row: row, Column: column}, loop) {
+			if FigureContains(vertices, Point{Row: row, Col: column}) {
+				if !PointInList(Point{Row: row, Col: column}, loop) {
 					sum++
 				}
 			}
@@ -47,8 +47,8 @@ func TestTestInput(t *testing.T) {
 	sum := 0
 	for row := 0; row < len(grid); row++ {
 		for column := 0; column < len(grid[0]); column++ {
-			if FigureContains(vertices, Point{Row: row, Column: column}) {
-				if !PointInList(Point{Row: row, Column: column}, loop) {
+			if FigureContains(vertices, Point{Row: row, Col: column}) {
+				if !PointInList(Point{Row: row, Col: column}, loop) {
 					sum++
 				}
 			}
@@ -71,25 +71,25 @@ func isVertex(index int, loop []Point) bool {
 func findCorrectLoop(grid [][]string, startingPoint Point) []Point {
 	path := []Point{startingPoint}
 	if leftValid(grid, startingPoint) {
-		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row, Column: startingPoint.Column - 1}))
+		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row, Col: startingPoint.Col - 1}))
 		if valid {
 			return loop
 		}
 	}
 	if rightValid(grid, startingPoint) {
-		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row, Column: startingPoint.Column + 1}))
+		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row, Col: startingPoint.Col + 1}))
 		if valid {
 			return loop
 		}
 	}
 	if upValid(grid, startingPoint) {
-		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row - 1, Column: startingPoint.Column}))
+		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row - 1, Col: startingPoint.Col}))
 		if valid {
 			return loop
 		}
 	}
 	if downValid(grid, startingPoint) {
-		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row + 1, Column: startingPoint.Column}))
+		loop, valid := findLoop(grid, append(path, Point{Row: startingPoint.Row + 1, Col: startingPoint.Col}))
 		if valid {
 			return loop
 		}
@@ -99,7 +99,7 @@ func findCorrectLoop(grid [][]string, startingPoint Point) []Point {
 
 func findLoop(grid [][]string, path []Point) ([]Point, bool) {
 	lastPoint := path[len(path)-1]
-	if len(path) > 1 && grid[lastPoint.Row][lastPoint.Column] == "S" {
+	if len(path) > 1 && grid[lastPoint.Row][lastPoint.Col] == "S" {
 		return path, true
 	}
 
@@ -114,54 +114,54 @@ func findLoop(grid [][]string, path []Point) ([]Point, bool) {
 func getNext(grid [][]string, path []Point) (Point, bool) {
 	var connected []Point
 	lastPoint := path[len(path)-1]
-	switch lastValue := grid[lastPoint.Row][lastPoint.Column]; lastValue {
+	switch lastValue := grid[lastPoint.Row][lastPoint.Col]; lastValue {
 	case "-":
 		if leftValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row, Column: lastPoint.Column - 1})
+			connected = append(connected, Point{Row: lastPoint.Row, Col: lastPoint.Col - 1})
 		}
 		if rightValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row, Column: lastPoint.Column + 1})
+			connected = append(connected, Point{Row: lastPoint.Row, Col: lastPoint.Col + 1})
 		}
 	case "|":
 		if upValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row - 1, Column: lastPoint.Column})
+			connected = append(connected, Point{Row: lastPoint.Row - 1, Col: lastPoint.Col})
 		}
 		if downValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row + 1, Column: lastPoint.Column})
+			connected = append(connected, Point{Row: lastPoint.Row + 1, Col: lastPoint.Col})
 		}
 	case "F":
 		if downValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row + 1, Column: lastPoint.Column})
+			connected = append(connected, Point{Row: lastPoint.Row + 1, Col: lastPoint.Col})
 		}
 		if rightValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row, Column: lastPoint.Column + 1})
+			connected = append(connected, Point{Row: lastPoint.Row, Col: lastPoint.Col + 1})
 		}
 	case "L":
 		if rightValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row, Column: lastPoint.Column + 1})
+			connected = append(connected, Point{Row: lastPoint.Row, Col: lastPoint.Col + 1})
 		}
 		if upValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row - 1, Column: lastPoint.Column})
+			connected = append(connected, Point{Row: lastPoint.Row - 1, Col: lastPoint.Col})
 		}
 	case "J":
 		if upValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row - 1, Column: lastPoint.Column})
+			connected = append(connected, Point{Row: lastPoint.Row - 1, Col: lastPoint.Col})
 		}
 		if leftValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row, Column: lastPoint.Column - 1})
+			connected = append(connected, Point{Row: lastPoint.Row, Col: lastPoint.Col - 1})
 		}
 	case "7":
 		if leftValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row, Column: lastPoint.Column - 1})
+			connected = append(connected, Point{Row: lastPoint.Row, Col: lastPoint.Col - 1})
 		}
 		if downValid(grid, lastPoint) {
-			connected = append(connected, Point{Row: lastPoint.Row + 1, Column: lastPoint.Column})
+			connected = append(connected, Point{Row: lastPoint.Row + 1, Col: lastPoint.Col})
 		}
 	}
 
 	filtered := Filter(connected, func(point Point) bool {
 		secondToLast := path[len(path)-2]
-		if secondToLast.Row == point.Row && secondToLast.Column == point.Column {
+		if secondToLast.Row == point.Row && secondToLast.Col == point.Col {
 			return false
 		}
 		return true
@@ -175,11 +175,11 @@ func getNext(grid [][]string, path []Point) (Point, bool) {
 }
 
 func leftValid(grid [][]string, point Point) bool {
-	left := Point{Row: point.Row, Column: point.Column - 1}
-	if !InGrid(left.Row, left.Column, grid) {
+	left := Point{Row: point.Row, Col: point.Col - 1}
+	if !InGrid(left.Row, left.Col, grid) {
 		return false
 	}
-	leftValue := grid[left.Row][left.Column]
+	leftValue := grid[left.Row][left.Col]
 	if leftValue == "-" || leftValue == "L" || leftValue == "F" || leftValue == "S" {
 		return true
 	}
@@ -187,11 +187,11 @@ func leftValid(grid [][]string, point Point) bool {
 }
 
 func rightValid(grid [][]string, point Point) bool {
-	right := Point{Row: point.Row, Column: point.Column + 1}
-	if !InGrid(right.Row, right.Column, grid) {
+	right := Point{Row: point.Row, Col: point.Col + 1}
+	if !InGrid(right.Row, right.Col, grid) {
 		return false
 	}
-	rightValue := grid[right.Row][right.Column]
+	rightValue := grid[right.Row][right.Col]
 	if rightValue == "-" || rightValue == "J" || rightValue == "7" || rightValue == "S" {
 		return true
 	}
@@ -199,11 +199,11 @@ func rightValid(grid [][]string, point Point) bool {
 }
 
 func upValid(grid [][]string, point Point) bool {
-	up := Point{Row: point.Row - 1, Column: point.Column}
-	if !InGrid(up.Row, up.Column, grid) {
+	up := Point{Row: point.Row - 1, Col: point.Col}
+	if !InGrid(up.Row, up.Col, grid) {
 		return false
 	}
-	upValue := grid[up.Row][up.Column]
+	upValue := grid[up.Row][up.Col]
 	if upValue == "|" || upValue == "F" || upValue == "7" || upValue == "S" {
 		return true
 	}
@@ -211,11 +211,11 @@ func upValid(grid [][]string, point Point) bool {
 }
 
 func downValid(grid [][]string, point Point) bool {
-	down := Point{Row: point.Row + 1, Column: point.Column}
-	if !InGrid(down.Row, down.Column, grid) {
+	down := Point{Row: point.Row + 1, Col: point.Col}
+	if !InGrid(down.Row, down.Col, grid) {
 		return false
 	}
-	downValue := grid[down.Row][down.Column]
+	downValue := grid[down.Row][down.Col]
 	if downValue == "|" || downValue == "L" || downValue == "J" || downValue == "S" {
 		return true
 	}

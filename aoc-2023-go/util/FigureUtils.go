@@ -5,15 +5,15 @@ import (
 )
 
 func intersects(A, B Point, P [2]float64) bool {
-	if A.Column > B.Column {
+	if A.Col > B.Col {
 		return intersects(B, A, P)
 	}
 
-	if P[1] == float64(A.Column) || P[1] == float64(B.Column) {
+	if P[1] == float64(A.Col) || P[1] == float64(B.Col) {
 		P[1] += 0.0001
 	}
 
-	if P[1] > float64(B.Column) || P[1] < float64(A.Column) || P[0] >= math.Max(float64(A.Row), float64(B.Row)) {
+	if P[1] > float64(B.Col) || P[1] < float64(A.Col) || P[0] >= math.Max(float64(A.Row), float64(B.Row)) {
 		return false
 	}
 
@@ -21,17 +21,24 @@ func intersects(A, B Point, P [2]float64) bool {
 		return true
 	}
 
-	red := (P[1] - float64(A.Column)) / (P[0] - float64(A.Row))
-	blue := (float64(B.Column) - float64(A.Column)) / (float64(B.Row) - float64(A.Row))
+	red := (P[1] - float64(A.Col)) / (P[0] - float64(A.Row))
+	blue := (float64(B.Col) - float64(A.Col)) / (float64(B.Row) - float64(A.Row))
 	return red >= blue
 }
 
 func FigureContains(shape []Point, point Point) bool {
 	inside := false
 	for i := 0; i < len(shape); i++ {
-		if intersects(shape[i], shape[(i+1)%len(shape)], [2]float64{float64(point.Row), float64(point.Column)}) {
+		if intersects(shape[i], shape[(i+1)%len(shape)], [2]float64{float64(point.Row), float64(point.Col)}) {
 			inside = !inside
 		}
 	}
 	return inside
+}
+
+func CalculateArea(shape []Point) (sum int) {
+	for i := 0; i < len(shape); i++ {
+		sum += shape[i].Row*shape[(i+1)%len(shape)].Col - shape[i].Col*shape[(i+1)%len(shape)].Row
+	}
+	return Abs(sum / 2)
 }

@@ -13,7 +13,7 @@ func Filter[T any](list []T, test func(T) bool) (filteredList []T) {
 
 func PointInList(point Point, list []Point) bool {
 	for _, elem := range list {
-		if elem.Row == point.Row && elem.Column == point.Column {
+		if elem.Row == point.Row && elem.Col == point.Col {
 			return true
 		}
 	}
