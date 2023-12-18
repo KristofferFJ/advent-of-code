@@ -24,7 +24,7 @@ func TestInput(t *testing.T) {
 		Vertices = append(Vertices, pos)
 	}
 
-	println(CalculateArea(Vertices) + (edges+2)/2)
+	println(CalculateEnclosedPoints(Vertices))
 }
 
 func parseInput(input string) []Instruction {

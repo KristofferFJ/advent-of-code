@@ -36,9 +36,16 @@ func FigureContains(shape []Point, point Point) bool {
 	return inside
 }
 
-func CalculateArea(shape []Point) (sum int) {
-	for i := 0; i < len(shape); i++ {
-		sum += shape[i].Row*shape[(i+1)%len(shape)].Col - shape[i].Col*shape[(i+1)%len(shape)].Row
+func CalculateArea(vertices []Point) (sum int) {
+	for i := 0; i < len(vertices); i++ {
+		sum += vertices[i].Row*vertices[(i+1)%len(vertices)].Col - vertices[i].Col*vertices[(i+1)%len(vertices)].Row
 	}
 	return Abs(sum / 2)
+}
+
+func CalculateEnclosedPoints(vertices []Point) (sum int) {
+	for i := 0; i < len(vertices); i++ {
+		sum += Abs(vertices[i].Row-vertices[(i+1)%len(vertices)].Row) + Abs(vertices[i].Col-vertices[(i+1)%len(vertices)].Col)
+	}
+	return CalculateArea(vertices) + (sum+2)/2
 }

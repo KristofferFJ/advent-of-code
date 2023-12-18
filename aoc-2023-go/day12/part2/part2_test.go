@@ -10,7 +10,6 @@ import (
 type Setup struct {
 	springs       string
 	configuration []int
-	config        string
 }
 
 func TestInput(t *testing.T) {
@@ -32,7 +31,6 @@ func TestInput(t *testing.T) {
 			Setup{
 				springs:       alteredSprings,
 				configuration: util.IntArray(alteredConfig),
-				config:        alteredConfig,
 			})
 	}
 
@@ -42,73 +40,139 @@ func TestInput(t *testing.T) {
 
 	fmt.Println(sum)
 }
+
+func key(springs string, config []int) string {
+	return springs + fmt.Sprintf("%v", config)
+}
+
+var cache = make(map[string]int)
+
 func countValidSetups(setup Setup) int {
-	springCount := strings.Count(setup.springs, "#")
-	questionMarkCount := strings.Count(setup.springs, "?")
-	springsToPlace := util.SumIntArray(setup.configuration) - springCount
-	dotsToPlace := questionMarkCount - springsToPlace
-
-	return len(getValidPositions(springsToPlace, dotsToPlace, setup.springs, setup.config, setup.configuration))
+	cache = make(map[string]int)
+	value := countValidSetupsRecursive(setup.springs, setup.configuration, 0)
+	fmt.Printf("%s: %d\n", setup.springs, value)
+	return value
 }
 
-func getValidPositions(springsToPlace, dotsToPlace int, springs, config string, configuration []int) []string {
-	if springsToPlace == 0 && dotsToPlace == 0 {
-		if valid(springs, config) {
-			return []string{springs}
+func countValidSetupsRecursive(spring string, config []int, index int) int {
+	if strings.Index(spring, "?") == -1 {
+		if valid(spring, config) {
+			return 1
 		}
-		return []string{}
+		return 0
 	}
 
-	if !possiblyValid(springs, configuration) {
-		return []string{}
+	count, ok := cache[key(spring, config)]
+	if ok {
+		return count
+	} else {
+		validConfig, remainingSpring, remainingConfig := possiblyValid(spring, config)
+		index -= len(spring) - len(remainingSpring)
+		if index > 0 {
+			spring = remainingSpring
+			config = remainingConfig
+		} else {
+			index += len(spring) - len(remainingSpring)
+		}
+		if !validConfig {
+			cache[key(spring, config)] = 0
+			return 0
+		}
 	}
 
-	if springsToPlace > 0 && dotsToPlace > 0 {
-		return append(getValidPositions(springsToPlace-1, dotsToPlace, strings.Replace(springs, "?", "#", 1), config, configuration),
-			getValidPositions(springsToPlace, dotsToPlace-1, strings.Replace(springs, "?", ".", 1), config, configuration)...)
+	next := spring[index : index+1]
+	validSetups := 0
+	if next == "#" {
+		validSetups = countValidSetupsRecursive(spring, config, index+1)
 	}
-	if springsToPlace > 0 {
-		return getValidPositions(springsToPlace-1, dotsToPlace, strings.Replace(springs, "?", "#", 1), config, configuration)
+	if next == "." {
+		validSetups = countValidSetupsRecursive(spring, config, index+1)
 	}
-	return getValidPositions(springsToPlace, dotsToPlace-1, strings.Replace(springs, "?", ".", 1), config, configuration)
+	if next == "?" {
+		validSetups = countValidSetupsRecursive(spring[:index]+"#"+spring[index+1:], config, index+1) +
+			countValidSetupsRecursive(spring[:index]+"."+spring[index+1:], config, index+1)
+	}
+
+	cache[key(spring, config)] = validSetups
+	return validSetups
 }
 
-func possiblyValid(springs string, configuration []int) bool {
+func possiblyValid(springs string, configuration []int) (bool, string, []int) {
 	finishedUpUntil := strings.Index(springs, "?")
+	remainingSpring := springs
+	remainingConfig := configuration
+
+	springsArray := strings.Split(springs, "")
 	if finishedUpUntil > 0 {
 		var finishedGroups []int
+
 		for _, segment := range strings.Split(springs[:(finishedUpUntil)], ".") {
 			if segment != "" {
 				finishedGroups = append(finishedGroups, len(segment))
 			}
 		}
 
+		if len(finishedGroups) > len(configuration) {
+			return false, springs, configuration
+		}
+
 		for i := 0; i < len(finishedGroups)-1; i++ {
 			if finishedGroups[i] != configuration[i] {
-				return false
+				return false, springs, configuration
 			}
 		}
-		if len(finishedGroups) > 0 && finishedGroups[len(finishedGroups)-1] > configuration[len(finishedGroups)-1] {
-			return false
+
+		if len(finishedGroups) > 0 {
+			if finishedGroups[len(finishedGroups)-1] > configuration[len(finishedGroups)-1] {
+				return false, springs, configuration
+			}
 		}
-		if len(finishedGroups) > 0 && springs[finishedUpUntil-1:finishedUpUntil] == "." && finishedGroups[len(finishedGroups)-1] != configuration[len(finishedGroups)-1] {
-			return false
+
+		minFirstGroup := 0
+		start := util.Min(strings.Index(springs, "#"), strings.Index(springs, "?"))
+		if start != -1 {
+			for i := start; i < len(springsArray); i++ {
+				if springsArray[i] == "#" {
+					minFirstGroup += 1
+				} else {
+					break
+				}
+			}
+		}
+
+		if len(configuration) > 0 && minFirstGroup > configuration[0] {
+			return false, springs, configuration
+		}
+
+		if finishedGroups != nil && springs[finishedUpUntil-1:finishedUpUntil] == "#" {
+			finishedGroups = finishedGroups[:len(finishedGroups)-1]
+		}
+
+		if finishedGroups != nil {
+			for finishedUpUntil > 0 {
+				if springs[finishedUpUntil-1:finishedUpUntil] == "." {
+					break
+				}
+				finishedUpUntil -= 1
+			}
+			remainingSpring = springs[finishedUpUntil:]
+			remainingConfig = configuration[len(finishedGroups):]
 		}
 	}
 
-	return true
+	return true, remainingSpring, remainingConfig
 }
 
-func valid(springs string, config string) bool {
+func valid(springs string, configuration []int) bool {
 	segments := strings.Split(springs, ".")
-	var counts []string
+	var counts []int
 
 	for _, segment := range segments {
 		if segment == "" {
 			continue
 		}
-		counts = append(counts, fmt.Sprintf("%d", len(segment)))
+		counts = append(counts, len(segment))
 	}
 
-	return strings.Join(counts, ",") == config
+	return util.IntArrayEqual(counts, configuration)
 }
