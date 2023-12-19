@@ -4,5 +4,7 @@ import (
 	"testing"
 )
 
+var InputTest = ``
+
 func TestInput(t *testing.T) {
 }

@@ -25,3 +25,8 @@ func IntArray(string string) []int {
 	}
 	return numbers
 }
+
+func Int(string string) int {
+	number, _ := strconv.Atoi(string)
+	return number
+}
