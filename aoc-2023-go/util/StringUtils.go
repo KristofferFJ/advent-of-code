@@ -3,6 +3,7 @@ package util
 import (
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func IsNumber(s string) bool {
@@ -29,4 +30,22 @@ func IntArray(string string) []int {
 func Int(string string) int {
 	number, _ := strconv.Atoi(string)
 	return number
+}
+
+func Duplicate2D(rows, cols int, value string) string {
+	var colList []string
+	for _, line := range strings.Split(value, "\n") {
+		duplicatedLine := line
+		for i := 0; i < rows-1; i++ {
+			duplicatedLine += line
+		}
+		colList = append(colList, duplicatedLine)
+	}
+	upperRow := strings.Join(colList, "\n")
+	fullString := upperRow
+	for i := 0; i < cols-1; i++ {
+		fullString += "\n" + upperRow
+	}
+
+	return fullString
 }

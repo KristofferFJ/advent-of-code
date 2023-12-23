@@ -124,3 +124,12 @@ func contains(slice [][]string, item []string) bool {
 	}
 	return false
 }
+
+func Contains[T comparable](list []T, elem T) bool {
+	for _, element := range list {
+		if element == elem {
+			return true
+		}
+	}
+	return false
+}
