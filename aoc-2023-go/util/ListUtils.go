@@ -116,6 +116,18 @@ func RemoveDuplicates(slice [][]string) [][]string {
 	return unique
 }
 
+func RemoveDuplicateValue[T comparable](slice []T) []T {
+	var result []T
+	seen := make(map[T]bool)
+	for _, elem := range slice {
+		if _, exists := seen[elem]; !exists {
+			seen[elem] = true
+			result = append(result, elem)
+		}
+	}
+	return result
+}
+
 func contains(slice [][]string, item []string) bool {
 	for _, v := range slice {
 		if reflect.DeepEqual(v, item) {
