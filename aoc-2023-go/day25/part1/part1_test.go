@@ -3,6 +3,8 @@ package part1
 import (
 	"fmt"
 	"io.kristofferfj.github/aoc-2023-go/util"
+	"math"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -21,59 +23,114 @@ lsr: lhk
 rzs: qnr cmg lsr rsh
 frs: qnr lhk lsr`
 
-type Conn struct {
-	one, two string
+type Edge struct{ one, two string }
+
+var connections = make(map[string][]string)
+var vertices []string
+var edges []Edge
+
+type EdgeCount struct {
+	edge  Edge
+	count int
 }
 
-var connList []Conn
+var edgeCounts []EdgeCount
+var paths [][]string
+var djikstra = make(map[string]int)
 
 func TestInput(t *testing.T) {
-	connections := make(map[string][]string)
 	for _, line := range strings.Split(Input, "\n") {
 		parts := strings.Split(line, ": ")
+		if !util.Contains(vertices, parts[0]) {
+			vertices = append(vertices, parts[0])
+			djikstra[parts[0]] = math.MaxInt
+		}
 		for _, conn := range strings.Split(parts[1], " ") {
 			connections[parts[0]] = append(connections[parts[0]], conn)
 			connections[conn] = append(connections[conn], parts[0])
-		}
-	}
-	done := make(map[string]bool)
-	for key, value := range connections {
-		done[key] = true
-		for _, conn := range value {
-			if done[conn] {
-				continue
+			edges = append(edges, Edge{one: parts[0], two: conn})
+			if !util.Contains(vertices, conn) {
+				vertices = append(vertices, conn)
+				djikstra[conn] = math.MaxInt
 			}
-			connList = append(connList, Conn{one: key, two: conn})
 		}
 	}
 
-	for i := 0; i < len(connList); i++ {
-		for j := i + 1; j < len(connList); j++ {
-			for k := j + 1; k < len(connList); k++ {
+	for i := 0; i < len(vertices)-1; i++ {
+		paths = append(paths, getPaths(i)...)
+	}
+
+	for _, edge := range edges {
+		count := 0
+		for _, path := range paths {
+			if util.Contains(path, edge.one) && util.Contains(path, edge.two) {
+				count++
+			}
+		}
+		edgeCounts = append(edgeCounts, EdgeCount{edge: edge, count: count})
+	}
+
+	sort.Slice(edgeCounts, func(i, j int) bool {
+		return edgeCounts[i].count > edgeCounts[j].count
+	})
+
+	for i := 0; i < len(edgeCounts); i++ {
+		for j := i + 1; j < len(edgeCounts); j++ {
+			for k := j + 1; k < len(edgeCounts); k++ {
 				duplicate := util.DuplicateMapListValues(connections)
-				duplicate = removeConnection(duplicate, connList[i])
-				duplicate = removeConnection(duplicate, connList[j])
-				duplicate = removeConnection(duplicate, connList[k])
+				duplicate = removeConnection(duplicate, edgeCounts[i].edge)
+				duplicate = removeConnection(duplicate, edgeCounts[j].edge)
+				duplicate = removeConnection(duplicate, edgeCounts[k].edge)
 				groups := getGroups(duplicate)
 				if len(groups) > 1 {
 					fmt.Println(len(groups[0]) * len(groups[1]))
+					return
 				}
 			}
 		}
 	}
+
+	fmt.Println(paths)
 }
 
-func countConnections(connections map[string][]string) {
-	count := 0
-	for _, value := range connections {
-		count += len(value)
+func getPaths(index int) (paths [][]string) {
+	thisDjikstra := util.DuplicateMap(djikstra)
+	vertex := vertices[index]
+	thisDjikstra[vertex] = 0
+	next := []string{vertex}
+	for len(next) > 0 {
+		current := next[0]
+		next = next[1:]
+		for _, conn := range connections[current] {
+			if thisDjikstra[conn] > thisDjikstra[current]+1 {
+				thisDjikstra[conn] = thisDjikstra[current] + 1
+				next = append(next, conn)
+			}
+		}
 	}
-	fmt.Printf("%d connections\n", count/2)
+
+	for j := index + 1; j < len(vertices); j++ {
+		toVertex := vertices[j]
+		path := []string{toVertex}
+		dist := thisDjikstra[path[len(path)-1]]
+		for dist > 0 {
+			for _, conn := range connections[path[len(path)-1]] {
+				if thisDjikstra[conn] == dist-1 {
+					path = append(path, conn)
+					dist--
+					break
+				}
+			}
+		}
+		paths = append(paths, path)
+	}
+
+	return paths
 }
 
-func removeConnection(conns map[string][]string, conn Conn) map[string][]string {
-	conns[conn.one] = util.RemoveElement(conns[conn.one], conn.two)
-	conns[conn.two] = util.RemoveElement(conns[conn.two], conn.one)
+func removeConnection(conns map[string][]string, edge Edge) map[string][]string {
+	conns[edge.one] = util.RemoveElement(conns[edge.one], edge.two)
+	conns[edge.two] = util.RemoveElement(conns[edge.two], edge.one)
 	return conns
 }
 
