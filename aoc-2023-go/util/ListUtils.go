@@ -145,3 +145,12 @@ func Contains[T comparable](list []T, elem T) bool {
 	}
 	return false
 }
+
+func RemoveElement[T comparable](list []T, elem T) []T {
+	for i, element := range list {
+		if element == elem {
+			return append(list[:i], list[i+1:]...)
+		}
+	}
+	return list
+}
