@@ -19,6 +19,15 @@ func ToGrid(s string) [][]string {
 	return grid
 }
 
+func Print(grid [][]string) string {
+	var lines []string
+	for _, row := range grid {
+		lines = append(lines, strings.Join(row, ""))
+	}
+
+	return strings.Join(lines, "\n")
+}
+
 func ToIntGrid(s string) [][]int {
 	lines := strings.Split(s, "\n")
 	var grid [][]int

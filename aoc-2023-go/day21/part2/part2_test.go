@@ -1,24 +1,11 @@
-package part1
+package part2
 
 import (
 	"fmt"
 	"io.kristofferfj.github/aoc-2023-go/util"
-	"slices"
 	"strconv"
 	"testing"
 )
-
-var InputTest = `...........
-.....###.#.
-.###.##..#.
-..#.#...#..
-....#.#....
-.##..S####.
-.##..#...#.
-.......##..
-.##.#.####.
-.##..##.##.
-...........`
 
 type Point struct {
 	row, col int
@@ -32,17 +19,28 @@ func key(row, col int) string {
 	return strconv.Itoa(row) + "," + strconv.Itoa(col)
 }
 
-const TARGET = 64
-
 func TestInput(t *testing.T) {
-	grid := util.ToGrid(Input)
+	var values [3][2]int
+	values[0] = [2]int{2, result(2)}
+	values[1] = [2]int{4, result(4)}
+	values[2] = [2]int{6, result(6)}
+
+	//use tool for finding quadratic equation, then solve for n = 202300 (steps%131)
+
+	fmt.Println(values)
+}
+
+func result(n int) int {
+	target := 65 + 131*n
+	input := util.Duplicate2D(n*2+1, n*2+1, Input)
+	grid := util.ToGrid(input)
 	var queue []*Point
 
 	for row := 0; row < len(grid); row++ {
 		for col := 0; col < len(grid[0]); col++ {
 			point := Point{row: row, col: col, dist: 2*(len(grid)+len(grid[0])) + 1}
 			points[key(point.row, point.col)] = &point
-			if grid[row][col] == "S" {
+			if row == (len(grid)-1)/2 && col == (len(grid[0])-1)/2 {
 				queue = append(queue, points[key(point.row, point.col)])
 				point.dist = 0
 			}
@@ -60,7 +58,7 @@ func TestInput(t *testing.T) {
 				continue
 			}
 			point.visited = true
-			if point.dist == TARGET {
+			if point.dist == target {
 				continue
 			}
 			neighbours := []*Point{
@@ -77,24 +75,24 @@ func TestInput(t *testing.T) {
 				if grid[neighbour.row][neighbour.col] == "#" {
 					continue
 				}
-				if neighbour.dist != TARGET {
+				if neighbour.dist != target {
 					neighbour.dist = point.dist + 1
 				}
 				queue = append(queue, neighbour)
 			}
 
-			if point.dist%2 == 0 && point.dist == i {
-				point.dist = TARGET
+			if (point.dist+1)%2 == 0 && point.dist == i {
+				point.dist = target
 			}
 		}
 	}
 
-	var count []string
+	count := 0
 	for _, value := range points {
-		if value.visited && value.dist == TARGET {
-			count = append(count, key(value.row, value.col))
+		if value.visited && value.dist == target {
+			count++
 		}
 	}
-	slices.Sort(count)
-	fmt.Println(len(count))
+
+	return count
 }
