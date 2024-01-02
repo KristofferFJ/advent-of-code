@@ -20,14 +20,17 @@ func key(row, col int) string {
 }
 
 func TestInput(t *testing.T) {
-	var values [3][2]int
-	values[0] = [2]int{2, result(2)}
-	values[1] = [2]int{4, result(4)}
-	values[2] = [2]int{6, result(6)}
+	values := [3]int{result(2), result(4), result(6)}
 
-	//use tool for finding quadratic equation, then solve for n = 202300 (steps%131)
+	m := util.Matrix([][]float64{
+		{4, 2, 1},
+		{16, 4, 1},
+		{36, 6, 1},
+	})
+	v := util.NewVector(values[0], values[1], values[2])
+	_, vSolved := util.Solve(m, v)
 
-	fmt.Println(values)
+	fmt.Printf("%f", vSolved[0]*202300*202300+vSolved[1]*202300+vSolved[2])
 }
 
 func result(n int) int {
